@@ -14,8 +14,7 @@ FROM node:18  AS develop-node
 WORKDIR /root/running_page
 COPY ./package.json /root/running_page/package.json
 COPY ./pnpm-lock.yaml /root/running_page/pnpm-lock.yaml
-RUN npm config set registry https://registry.npm.taobao.org \
-  &&npm install -g corepack \
+RUN npm install -g corepack \
   &&corepack enable \
   &&pnpm install
 
@@ -32,23 +31,33 @@ ARG your_mobile
 ARG your_password
 ARG YOUR_NAME
 
+ENV E_app=$app
+ENV E_nike_refresh_token=$nike_refresh_token
+ENV E_secret_string=$secret_string
+ENV E_client_id=$client_id
+ENV E_client_secret=$client_secret
+ENV E_refresh_token=$refresh_token
+ENV E_your_mobile=$your_mobile
+ENV E_your_password=$your_password
+ENV E_YOUR_NAME=$YOUR_NAME
+
 WORKDIR /root/running_page
 COPY . /root/running_page/
 ARG DUMMY=unknown
 RUN DUMMY=${DUMMY}; \
-  echo $app ; \
-  if [ "$app" = "NRC" ] ; then \
-  python3 run_page/nike_sync.py ${nike_refresh_token}; \
-  elif [ "$app" = "Garmin" ] ; then \
-  python3 run_page/garmin_sync.py ${secret_string} ; \
-  elif [ "$app" = "Garmin-CN" ] ; then \
-  python3 run_page/garmin_sync.py ${secret_string} --is-cn ; \
-  elif [ "$app" = "Strava" ] ; then \
-  python3 run_page/strava_sync.py ${client_id} ${client_secret} ${refresh_token};\
-  elif [ "$app" = "Nike_to_Strava" ] ; then \
-  python3  run_page/nike_to_strava_sync.py ${nike_refresh_token} ${client_id} ${client_secret} ${refresh_token};\
-  elif [ "$app" = "Keep" ] ; then \
-  python3 run_page/keep_sync.py ${your_mobile} ${your_password} --with-gpx\
+  echo $E_app ; \
+  if [ "$E_app" = "NRC" ] ; then \
+  python3 run_page/nike_sync.py ${E_nike_refresh_token}; \
+  elif [ "$E_app" = "Garmin" ] ; then \
+  python3 run_page/garmin_sync.py ${E_secret_string} ; \
+  elif [ "$E_app" = "Garmin-CN" ] ; then \
+  python3 run_page/garmin_sync.py ${E_secret_string} --is-cn ; \
+  elif [ "$E_app" = "Strava" ] ; then \
+  python3 run_page/strava_sync.py ${E_client_id} ${E_client_secret} ${E_refresh_token};\
+  elif [ "$E_app" = "Nike_to_Strava" ] ; then \
+  python3  run_page/nike_to_strava_sync.py ${E_nike_refresh_token} ${E_client_id} ${E_client_secret} ${E_refresh_token};\
+  elif [ "$E_app" = "Keep" ] ; then \
+  python3 run_page/keep_sync.py ${E_your_mobile} ${E_your_password} --with-gpx;\
   else \
   echo "Unknown app" ; \
   fi
