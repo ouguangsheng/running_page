@@ -28,6 +28,8 @@ ARG secret_string
 ARG client_id
 ARG client_secret
 ARG refresh_token
+ARG your_mobile
+ARG your_password
 ARG YOUR_NAME
 
 WORKDIR /root/running_page
@@ -45,6 +47,8 @@ RUN DUMMY=${DUMMY}; \
   python3 run_page/strava_sync.py ${client_id} ${client_secret} ${refresh_token};\
   elif [ "$app" = "Nike_to_Strava" ] ; then \
   python3  run_page/nike_to_strava_sync.py ${nike_refresh_token} ${client_id} ${client_secret} ${refresh_token};\
+  elif [ "$app" = "Keep" ] ; then \
+  python3 run_page/keep_sync.py ${your_mobile} ${your_password} --with-gpx\
   else \
   echo "Unknown app" ; \
   fi
